@@ -1,0 +1,49 @@
+{
+  "app_name": "MobileProxyManager",
+  "domain": "mutevazipeynircilik.com",
+  "version": "2.1.0",
+  
+  "proxy_connections": [
+    {
+      "name": "Turkey-Istanbul-01",
+      "type": "vless",
+      "url": "vless://<>@mutevazipeynircilik.com:443l",
+      "enabled": true
+    }
+  ],
+
+  "apn_profiles": [
+    {
+      "profile_name": "Tut_APN",
+      "carrier": "Tut",
+      "mcc": "286",
+      "mnc": "03",
+      "apn_settings": {
+        "dial": "*99#",
+        "apn_username": "tt_admin",
+        "apn_password": "TottiRome3732",
+        "auth_type": "PAP_OR_CHAP"
+      }
+    }
+  ],
+
+  "mms_config": [
+    {
+      "carrier": "Tucel",
+      "mcc": "286",
+      "mnc": "01",
+      "mmsc": "http://mms.mutevazipeynircilik.com/servlets/mms",
+      "mmscUrl": "http://mms.mutevazipeynircilik.com/servlets/mms",
+      "mmsproxy": "mms-proxy.mutevazipeynircilik.com",
+      "mmsport": "8002",
+      "mms_auth": {
+        "username": "mms_trcell",
+        "password": "MmS26mutoPey93"
+      }
+    }
+  ],
+
+  "backup_connections": {
+    "vless_fallback": "vless://f6g7h8i9-4j5k-6l7m-9n0o-1p2q3r4s5t6u@backup.mutevazipeynircilik.com:2096?encryption=none&security=reality&sni=www.micros.com&pbk=x7y9z2a4b6c8d1e3f5g7h9&sid=ab12cd34&type=tcp&flow=xtls-rprx-vision#Backup-Reality"
+  }
+}

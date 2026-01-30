@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mütevazi Peynircilik - El Yapımı Peynirler</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Maps API  Key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8ah37ida83njdws93hdsadas9x&libraries=places" async defer></script>
+    
+    <!-- Google Analytics ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-84927430328"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-84927430328');
+    </script>
+    
+    <!-- Stripe Publishable Key (example) -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Stripe key - safe to expose in frontend
+        const stripeKey = 'pk_test_XXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx';
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #D2691E;
+            --accent-color: #F4A460;
+            --text-dark: #2C1810;
+            --text-light: #6B4423;
+            --cream: #FFF8DC;
+            --white: #FFFFFF;
+        }
+        
+        body {
+            font-family: 'Lato', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--cream);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23D2691E" width="1200" height="600"/><circle fill="%23F4A460" opacity="0.1" cx="200" cy="150" r="100"/><circle fill="%23F4A460" opacity="0.1" cx="800" cy="400" r="150"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            text-align: center;
+            padding: 8rem 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--text-dark);
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover {
+            background: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .product-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-info p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        /* Map Section */
+        #map {
+            width: 100%;
+            height: 450px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .info-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .info-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .info-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">🧀 Mütevazi Peynircilik</div>
+            <ul class="nav-links">
+                <li><a href="#ana-sayfa">Ana Sayfa</a></li>
+                <li><a href="#urunler">Ürünler</a></li>
+                <li><a href="#hakkimizda">Hakkımızda</a></li>
+                <li><a href="#iletisim">İletişim</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero" id="ana-sayfa">
+        <h1>El Yapımı Geleneksel Peynirler</h1>
+        <p>Mütevazı ama lezzetli - 30 yıllık deneyimimizle üretiyoruz</p>
+        <a href="#urunler" class="cta-button">Ürünlerimizi Keşfedin</a>
+    </section>
+    
+    <div class="container">
+        <section class="section" id="urunler">
+            <h2>Ürünlerimiz</h2>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">🧀</div>
+                    <div class="product-info">
+                        <h3>Beyaz Peynir</h3>
+                        <p>Geleneksel yöntemlerle üretilen tam yağlı beyaz peynir. Kahvaltı sofralarınızın vazgeçilmezi.</p>
+                        <div class="price">₺150 / kg</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🧀</div>
+                    <div class="product-info">
+                        <h3>Kaşar Peyniri</h3>
+                        <p>Olgunlaştırılmış kaşar peyniri. Tost ve sandviçlerde mükemmel lezzet.</p>
+                        <div class="price">₺200 / kg</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🧀</div>
+                    <div class="product-info">
+                        <h3>Tulum Peyniri</h3>
+                        <p>Geleneksel tulum peyniri. Otlu ve özel baharatlarla zenginleştirilmiş.</p>
+                        <div class="price">₺180 / kg</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🧀</div>
+                    <div class="product-info">
+                        <h3>Lor Peyniri</h3>
+                        <p>Taze ve hafif lor peyniri. Börek ve tatlılarda kullanım için ideal.</p>
+                        <div class="price">₺120 / kg</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section" id="hakkimizda">
+            <h2>Hakkımızda</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto; font-size: 1.1rem; line-height: 1.8;">
+                Mütevazi Peynircilik olarak 1995 yılından beri geleneksel peynir üretimi yapıyoruz. 
+                Aileden gelen tariflerimiz ve modern hijyen standartlarımızla, doğal ve lezzetli 
+                peynirleri sofralarınıza getiriyoruz. Küçük ama kaliteli üretim anlayışımızla, 
+                her lokmada geleneksel lezzeti hissetmenizi sağlıyoruz.
+            </p>
+        </section>
+        
+        <section class="section" id="iletisim">
+            <h2>Bizi Ziyaret Edin</h2>
+            
+            <div class="contact-info">
+                <div class="info-card">
+                    <div class="icon">📍</div>
+                    <h3>Adres</h3>
+                    <p>Atatürk Caddesi No: 123<br>Keçiören / ANKARA</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="icon">📞</div>
+                    <h3>Telefon</h3>
+                    <p>+90 312 123 45 67<br>+90 532 987 65 43</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="icon">🕐</div>
+                    <h3>Çalışma Saatleri</h3>
+                    <p>Pazartesi - Cumartesi<br>08:00 - 19:00</p>
+                </div>
+            </div>
+            
+            <!-- Google Maps Integration -->
+            <div id="map"></div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>&copy; 2026 Mütevazi Peynircilik - Tüm hakları saklıdır.</p>
+        <p>📧 info@mutevazipeynircilik.com | 📱 @mutevazipeynir</p>
+    </footer>
+    
+    <script>
+        // Initialize Google Map
+        function initMap() {
+            // Coordinates for Keçiören, Ankara
+            const location = { lat: 39.9925, lng: 32.8541 };
+            
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: location,
+                styles: [
+                    {
+                        featureType: 'poi',
+                        elementType: 'labels',
+                        stylers: [{ visibility: 'off' }]
+                    }
+                ]
+            });
+            
+            // Add marker
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: 'Mütevazi Peynircilik',
+                icon: {
+                    url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="50">🧀</text></svg>',
+                    scaledSize: new google.maps.Size(50, 50)
+                }
+            });
+            
+            // Add info window
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="padding: 10px; font-family: 'Lato', sans-serif;">
+                        <h3 style="margin: 0 0 10px 0; color: #8B4513;">🧀 Mütevazi Peynircilik</h3>
+                        <p style="margin: 5px 0;">Atatürk Caddesi No: 123</p>
+                        <p style="margin: 5px 0;">Keçiören / ANKARA</p>
+                        <p style="margin: 5px 0;"><strong>☎ +90 312 123 45 67</strong></p>
+                    </div>
+                `
+            });
+            
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+        }
+        
+        // Initialize map when Google Maps API is loaded
+        if (typeof google !== 'undefined') {
+            google.maps.event.addDomListener(window, 'load', initMap);
+        }
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Example: Initialize Stripe
+        if (typeof Stripe !== 'undefined') {
+            const stripe = Stripe(stripeKey);
+            console.log('Stripe initialized with publishable key');
+        }
+        
+        console.log('Page loaded with the following publishable API keys:');
+        console.log('- Google Maps API');
+        console.log('- Google Analytics');
+        console.log('- Stripe Payment Gateway');
+    </script>
+</body>
+</html>
